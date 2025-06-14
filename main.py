@@ -8,7 +8,6 @@ from dataclasses import dataclass
 from typing import List, Optional, Dict
 import plotly.express as px
 import plotly.graph_objects as go
-from streamlit_lottie import st_lottie
 import requests
 
 # ==================== CONFIG ====================
@@ -43,7 +42,6 @@ class Database:
                            organization TEXT,
                            bio TEXT,
                            location TEXT,
-                           profile_image TEXT,
                            linkedin_url TEXT,
                            website_url TEXT,
                            kic_balance INTEGER DEFAULT 1000,
@@ -64,7 +62,6 @@ class Database:
                            size TEXT,
                            location TEXT,
                            website TEXT,
-                           logo_url TEXT,
                            founded_year INTEGER,
                            kic_balance INTEGER DEFAULT 5000,
                            total_projects_posted INTEGER DEFAULT 0,
@@ -89,7 +86,6 @@ class Database:
                            price_per_day INTEGER,
                            kic_price_per_day INTEGER,
                            rating REAL DEFAULT 0,
-                           image_url TEXT,
                            capacity INTEGER,
                            amenities TEXT,
                            total_bookings INTEGER DEFAULT 0,
@@ -268,22 +264,22 @@ class Database:
         # Seed companies
         companies_data = [
             ("Dubai Future Foundation", "Leading government organization driving future innovation in UAE", 
-             "Government", "Large", "Dubai", "https://dubaifuture.gov.ae", None, 2016, 50000, 15, 4.8, True),
+             "Government", "Large", "Dubai", "https://dubaifuture.gov.ae", 2016, 50000, 15, 4.8, True),
             ("Mubadala Investment Company", "Strategic investment company creating lasting value", 
-             "Investment", "Large", "Abu Dhabi", "https://mubadala.com", None, 2002, 75000, 22, 4.9, True),
+             "Investment", "Large", "Abu Dhabi", "https://mubadala.com", 2002, 75000, 22, 4.9, True),
             ("ADNOC", "Leading energy and petrochemicals company", 
-             "Energy", "Large", "Abu Dhabi", "https://adnoc.ae", None, 1971, 60000, 18, 4.7, True),
+             "Energy", "Large", "Abu Dhabi", "https://adnoc.ae", 1971, 60000, 18, 4.7, True),
             ("Noon", "E-commerce platform and technology company", 
-             "Technology", "Large", "Dubai", "https://noon.com", None, 2016, 40000, 12, 4.6, True),
+             "Technology", "Large", "Dubai", "https://noon.com", 2016, 40000, 12, 4.6, True),
             ("Emaar Properties", "Leading real estate development company", 
-             "Real Estate", "Large", "Dubai", "https://emaar.com", None, 1997, 45000, 20, 4.5, True),
+             "Real Estate", "Large", "Dubai", "https://emaar.com", 1997, 45000, 20, 4.5, True),
         ]
 
         cursor.executemany('''
                            INSERT INTO companies (name, description, industry, size, location, website, 
-                                                  logo_url, founded_year, kic_balance, total_projects_posted, 
+                                                  founded_year, kic_balance, total_projects_posted, 
                                                   rating, is_verified)
-                           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                            ''', companies_data)
 
         # Enhanced users with social features
@@ -291,26 +287,26 @@ class Database:
             ("ahmed.mansouri@example.com", hashlib.sha256("password123".encode()).hexdigest(),
              "Ahmed Al Mansouri", "talent", "Tech Innovations LLC", 
              "Robotics Engineer specializing in AI-driven automation systems. 5+ years experience in industrial robotics.",
-             "Abu Dhabi", None, "https://linkedin.com/in/ahmed-mansouri", "https://robotics-portfolio.ae", 
+             "Abu Dhabi", "https://linkedin.com/in/ahmed-mansouri", "https://robotics-portfolio.ae", 
              1500, 15, 450, True),
             ("fatima.zaabi@example.com", hashlib.sha256("password123".encode()).hexdigest(),
              "Dr. Fatima Al Zaabi", "talent", "Analytics Solutions",
              "Data Scientist and Machine Learning expert with focus on healthcare applications.",
-             "Dubai", None, "https://linkedin.com/in/fatima-zaabi", "https://ml-portfolio.ae",
+             "Dubai", "https://linkedin.com/in/fatima-zaabi", "https://ml-portfolio.ae",
              2200, 25, 780, True),
             ("sara.hassan@example.com", hashlib.sha256("password123".encode()).hexdigest(),
              "Sara Hassan", "company", "Dubai Future Foundation",
              "Innovation Manager at Dubai Future Foundation, leading emerging technology initiatives.",
-             "Dubai", None, "https://linkedin.com/in/sara-hassan", None,
+             "Dubai", "https://linkedin.com/in/sara-hassan", None,
              5000, 8, 320, True),
         ]
 
         for user_data in enhanced_users:
             cursor.execute('''
                            INSERT INTO users (email, password_hash, name, user_type, organization,
-                                              bio, location, profile_image, linkedin_url, website_url,
+                                              bio, location, linkedin_url, website_url,
                                               kic_balance, total_projects_completed, reputation_score, is_verified)
-                           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                            ''', user_data)
 
         # Enhanced projects with KIC integration
@@ -369,6 +365,21 @@ class Database:
                            ''', kic_transactions)
 
         self.conn.commit()
+
+
+# ==================== UTILITIES ====================
+def create_rating_stars(rating: float) -> str:
+    """Create HTML for rating stars"""
+    full_stars = int(rating)
+    half_star = 1 if rating - full_stars >= 0.5 else 0
+    empty_stars = 5 - full_stars - half_star
+
+    stars_html = "★" * full_stars
+    if half_star:
+        stars_html += "☆"
+    stars_html += "☆" * empty_stars
+
+    return f'<span class="rating-stars">{stars_html}</span> {rating:.1f}'
 
 
 # ==================== ENHANCED STYLES ====================
