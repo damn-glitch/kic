@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-from PIL import Image
 import sqlite3
 from datetime import datetime, timedelta
 import hashlib
@@ -14,7 +13,7 @@ import requests
 
 # ==================== CONFIG ====================
 st.set_page_config(
-    page_title="KIC innovation Hub",
+    page_title="UAE Innovate Hub - KIC",
     page_icon="🔬",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -36,607 +35,224 @@ class Database:
         cursor.execute('''
                        CREATE TABLE IF NOT EXISTS users
                        (
-                           id
-                           INTEGER
-                           PRIMARY
-                           KEY
-                           AUTOINCREMENT,
-                           email
-                           TEXT
-                           UNIQUE
-                           NOT
-                           NULL,
-                           password_hash
-                           TEXT
-                           NOT
-                           NULL,
-                           name
-                           TEXT
-                           NOT
-                           NULL,
-                           user_type
-                           TEXT
-                           NOT
-                           NULL,
-                           organization
-                           TEXT,
-                           bio
-                           TEXT,
-                           location
-                           TEXT,
-                           profile_image
-                           TEXT,
-                           linkedin_url
-                           TEXT,
-                           website_url
-                           TEXT,
-                           kic_balance
-                           INTEGER
-                           DEFAULT
-                           1000,
-                           total_projects_completed
-                           INTEGER
-                           DEFAULT
-                           0,
-                           reputation_score
-                           INTEGER
-                           DEFAULT
-                           0,
-                           is_verified
-                           BOOLEAN
-                           DEFAULT
-                           FALSE,
-                           created_at
-                           TIMESTAMP
-                           DEFAULT
-                           CURRENT_TIMESTAMP
+                           id INTEGER PRIMARY KEY AUTOINCREMENT,
+                           email TEXT UNIQUE NOT NULL,
+                           password_hash TEXT NOT NULL,
+                           name TEXT NOT NULL,
+                           user_type TEXT NOT NULL,
+                           organization TEXT,
+                           bio TEXT,
+                           location TEXT,
+                           profile_image TEXT,
+                           linkedin_url TEXT,
+                           website_url TEXT,
+                           kic_balance INTEGER DEFAULT 1000,
+                           total_projects_completed INTEGER DEFAULT 0,
+                           reputation_score INTEGER DEFAULT 0,
+                           is_verified BOOLEAN DEFAULT FALSE,
+                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                        )''')
 
         # Companies table
         cursor.execute('''
                        CREATE TABLE IF NOT EXISTS companies
                        (
-                           id
-                           INTEGER
-                           PRIMARY
-                           KEY
-                           AUTOINCREMENT,
-                           name
-                           TEXT
-                           NOT
-                           NULL,
-                           description
-                           TEXT,
-                           industry
-                           TEXT,
-                           size
-                           TEXT,
-                           location
-                           TEXT,
-                           website
-                           TEXT,
-                           logo_url
-                           TEXT,
-                           founded_year
-                           INTEGER,
-                           kic_balance
-                           INTEGER
-                           DEFAULT
-                           5000,
-                           total_projects_posted
-                           INTEGER
-                           DEFAULT
-                           0,
-                           rating
-                           REAL
-                           DEFAULT
-                           0,
-                           is_verified
-                           BOOLEAN
-                           DEFAULT
-                           FALSE,
-                           created_at
-                           TIMESTAMP
-                           DEFAULT
-                           CURRENT_TIMESTAMP
+                           id INTEGER PRIMARY KEY AUTOINCREMENT,
+                           name TEXT NOT NULL,
+                           description TEXT,
+                           industry TEXT,
+                           size TEXT,
+                           location TEXT,
+                           website TEXT,
+                           logo_url TEXT,
+                           founded_year INTEGER,
+                           kic_balance INTEGER DEFAULT 5000,
+                           total_projects_posted INTEGER DEFAULT 0,
+                           rating REAL DEFAULT 0,
+                           is_verified BOOLEAN DEFAULT FALSE,
+                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                        )''')
 
         # Enhanced labs table
         cursor.execute('''
                        CREATE TABLE IF NOT EXISTS labs
                        (
-                           id
-                           INTEGER
-                           PRIMARY
-                           KEY
-                           AUTOINCREMENT,
-                           name
-                           TEXT
-                           NOT
-                           NULL,
-                           university
-                           TEXT
-                           NOT
-                           NULL,
-                           location
-                           TEXT
-                           NOT
-                           NULL,
-                           specialty
-                           TEXT
-                           NOT
-                           NULL,
-                           available_from
-                           DATE,
-                           equipment
-                           TEXT,
-                           description
-                           TEXT,
-                           contact
-                           TEXT,
-                           price_per_day
-                           INTEGER,
-                           kic_price_per_day
-                           INTEGER,
-                           rating
-                           REAL
-                           DEFAULT
-                           0,
-                           image_url
-                           TEXT,
-                           capacity
-                           INTEGER,
-                           amenities
-                           TEXT,
-                           total_bookings
-                           INTEGER
-                           DEFAULT
-                           0,
-                           is_featured
-                           BOOLEAN
-                           DEFAULT
-                           FALSE
+                           id INTEGER PRIMARY KEY AUTOINCREMENT,
+                           name TEXT NOT NULL,
+                           university TEXT NOT NULL,
+                           location TEXT NOT NULL,
+                           specialty TEXT NOT NULL,
+                           available_from DATE,
+                           equipment TEXT,
+                           description TEXT,
+                           contact TEXT,
+                           price_per_day INTEGER,
+                           kic_price_per_day INTEGER,
+                           rating REAL DEFAULT 0,
+                           image_url TEXT,
+                           capacity INTEGER,
+                           amenities TEXT,
+                           total_bookings INTEGER DEFAULT 0,
+                           is_featured BOOLEAN DEFAULT FALSE
                        )''')
 
         # Enhanced talents table with social features
         cursor.execute('''
                        CREATE TABLE IF NOT EXISTS talents
                        (
-                           id
-                           INTEGER
-                           PRIMARY
-                           KEY
-                           AUTOINCREMENT,
-                           user_id
-                           INTEGER,
-                           title
-                           TEXT
-                           NOT
-                           NULL,
-                           location
-                           TEXT
-                           NOT
-                           NULL,
-                           experience
-                           TEXT,
-                           education
-                           TEXT,
-                           skills
-                           TEXT,
-                           availability
-                           TEXT,
-                           bio
-                           TEXT,
-                           hourly_rate
-                           INTEGER,
-                           kic_hourly_rate
-                           INTEGER,
-                           portfolio_url
-                           TEXT,
-                           linkedin_url
-                           TEXT,
-                           rating
-                           REAL
-                           DEFAULT
-                           0,
-                           total_projects
-                           INTEGER
-                           DEFAULT
-                           0,
-                           total_earnings
-                           INTEGER
-                           DEFAULT
-                           0,
-                           specializations
-                           TEXT,
-                           certifications
-                           TEXT,
-                           languages
-                           TEXT,
-                           is_featured
-                           BOOLEAN
-                           DEFAULT
-                           FALSE,
-                           FOREIGN
-                           KEY
-                       (
-                           user_id
-                       ) REFERENCES users
-                       (
-                           id
-                       )
-                           )''')
+                           id INTEGER PRIMARY KEY AUTOINCREMENT,
+                           user_id INTEGER,
+                           title TEXT NOT NULL,
+                           location TEXT NOT NULL,
+                           experience TEXT,
+                           education TEXT,
+                           skills TEXT,
+                           availability TEXT,
+                           bio TEXT,
+                           hourly_rate INTEGER,
+                           kic_hourly_rate INTEGER,
+                           portfolio_url TEXT,
+                           linkedin_url TEXT,
+                           rating REAL DEFAULT 0,
+                           total_projects INTEGER DEFAULT 0,
+                           total_earnings INTEGER DEFAULT 0,
+                           specializations TEXT,
+                           certifications TEXT,
+                           languages TEXT,
+                           is_featured BOOLEAN DEFAULT FALSE,
+                           FOREIGN KEY (user_id) REFERENCES users (id)
+                       )''')
 
         # Enhanced projects table
         cursor.execute('''
                        CREATE TABLE IF NOT EXISTS projects
                        (
-                           id
-                           INTEGER
-                           PRIMARY
-                           KEY
-                           AUTOINCREMENT,
-                           title
-                           TEXT
-                           NOT
-                           NULL,
-                           organization
-                           TEXT
-                           NOT
-                           NULL,
-                           company_id
-                           INTEGER,
-                           location
-                           TEXT
-                           NOT
-                           NULL,
-                           deadline
-                           DATE,
-                           posted
-                           DATE
-                           DEFAULT
-                           CURRENT_DATE,
-                           description
-                           TEXT,
-                           requirements
-                           TEXT,
-                           tags
-                           TEXT,
-                           budget_min
-                           INTEGER,
-                           budget_max
-                           INTEGER,
-                           kic_budget_min
-                           INTEGER,
-                           kic_budget_max
-                           INTEGER,
-                           status
-                           TEXT
-                           DEFAULT
-                           'Active',
-                           contact
-                           TEXT,
-                           views
-                           INTEGER
-                           DEFAULT
-                           0,
-                           applications
-                           INTEGER
-                           DEFAULT
-                           0,
-                           project_type
-                           TEXT
-                           DEFAULT
-                           'Research',
-                           urgency
-                           TEXT
-                           DEFAULT
-                           'Medium',
-                           remote_possible
-                           BOOLEAN
-                           DEFAULT
-                           FALSE,
-                           FOREIGN
-                           KEY
-                       (
-                           company_id
-                       ) REFERENCES companies
-                       (
-                           id
-                       )
-                           )''')
+                           id INTEGER PRIMARY KEY AUTOINCREMENT,
+                           title TEXT NOT NULL,
+                           organization TEXT NOT NULL,
+                           company_id INTEGER,
+                           location TEXT NOT NULL,
+                           deadline DATE,
+                           posted DATE DEFAULT CURRENT_DATE,
+                           description TEXT,
+                           requirements TEXT,
+                           tags TEXT,
+                           budget_min INTEGER,
+                           budget_max INTEGER,
+                           kic_budget_min INTEGER,
+                           kic_budget_max INTEGER,
+                           status TEXT DEFAULT 'Active',
+                           contact TEXT,
+                           views INTEGER DEFAULT 0,
+                           applications INTEGER DEFAULT 0,
+                           project_type TEXT DEFAULT 'Research',
+                           urgency TEXT DEFAULT 'Medium',
+                           remote_possible BOOLEAN DEFAULT FALSE,
+                           FOREIGN KEY (company_id) REFERENCES companies (id)
+                       )''')
 
         # Messages table for chat system
         cursor.execute('''
                        CREATE TABLE IF NOT EXISTS messages
                        (
-                           id
-                           INTEGER
-                           PRIMARY
-                           KEY
-                           AUTOINCREMENT,
-                           sender_id
-                           INTEGER
-                           NOT
-                           NULL,
-                           receiver_id
-                           INTEGER
-                           NOT
-                           NULL,
-                           message
-                           TEXT
-                           NOT
-                           NULL,
-                           message_type
-                           TEXT
-                           DEFAULT
-                           'text',
-                           is_read
-                           BOOLEAN
-                           DEFAULT
-                           FALSE,
-                           created_at
-                           TIMESTAMP
-                           DEFAULT
-                           CURRENT_TIMESTAMP,
-                           FOREIGN
-                           KEY
-                       (
-                           sender_id
-                       ) REFERENCES users
-                       (
-                           id
-                       ),
-                           FOREIGN KEY
-                       (
-                           receiver_id
-                       ) REFERENCES users
-                       (
-                           id
-                       )
-                           )''')
+                           id INTEGER PRIMARY KEY AUTOINCREMENT,
+                           sender_id INTEGER NOT NULL,
+                           receiver_id INTEGER NOT NULL,
+                           message TEXT NOT NULL,
+                           message_type TEXT DEFAULT 'text',
+                           is_read BOOLEAN DEFAULT FALSE,
+                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                           FOREIGN KEY (sender_id) REFERENCES users (id),
+                           FOREIGN KEY (receiver_id) REFERENCES users (id)
+                       )''')
 
         # Connections table (like LinkedIn connections)
         cursor.execute('''
                        CREATE TABLE IF NOT EXISTS connections
                        (
-                           id
-                           INTEGER
-                           PRIMARY
-                           KEY
-                           AUTOINCREMENT,
-                           requester_id
-                           INTEGER
-                           NOT
-                           NULL,
-                           addressee_id
-                           INTEGER
-                           NOT
-                           NULL,
-                           status
-                           TEXT
-                           DEFAULT
-                           'pending',
-                           message
-                           TEXT,
-                           created_at
-                           TIMESTAMP
-                           DEFAULT
-                           CURRENT_TIMESTAMP,
-                           accepted_at
-                           TIMESTAMP,
-                           FOREIGN
-                           KEY
-                       (
-                           requester_id
-                       ) REFERENCES users
-                       (
-                           id
-                       ),
-                           FOREIGN KEY
-                       (
-                           addressee_id
-                       ) REFERENCES users
-                       (
-                           id
-                       )
-                           )''')
+                           id INTEGER PRIMARY KEY AUTOINCREMENT,
+                           requester_id INTEGER NOT NULL,
+                           addressee_id INTEGER NOT NULL,
+                           status TEXT DEFAULT 'pending',
+                           message TEXT,
+                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                           accepted_at TIMESTAMP,
+                           FOREIGN KEY (requester_id) REFERENCES users (id),
+                           FOREIGN KEY (addressee_id) REFERENCES users (id)
+                       )''')
 
         # Activity feed table
         cursor.execute('''
                        CREATE TABLE IF NOT EXISTS activities
                        (
-                           id
-                           INTEGER
-                           PRIMARY
-                           KEY
-                           AUTOINCREMENT,
-                           user_id
-                           INTEGER
-                           NOT
-                           NULL,
-                           activity_type
-                           TEXT
-                           NOT
-                           NULL,
-                           title
-                           TEXT
-                           NOT
-                           NULL,
-                           description
-                           TEXT,
-                           related_id
-                           INTEGER,
-                           created_at
-                           TIMESTAMP
-                           DEFAULT
-                           CURRENT_TIMESTAMP,
-                           FOREIGN
-                           KEY
-                       (
-                           user_id
-                       ) REFERENCES users
-                       (
-                           id
-                       )
-                           )''')
+                           id INTEGER PRIMARY KEY AUTOINCREMENT,
+                           user_id INTEGER NOT NULL,
+                           activity_type TEXT NOT NULL,
+                           title TEXT NOT NULL,
+                           description TEXT,
+                           related_id INTEGER,
+                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                           FOREIGN KEY (user_id) REFERENCES users (id)
+                       )''')
 
         # KIC transactions table
         cursor.execute('''
                        CREATE TABLE IF NOT EXISTS kic_transactions
                        (
-                           id
-                           INTEGER
-                           PRIMARY
-                           KEY
-                           AUTOINCREMENT,
-                           user_id
-                           INTEGER
-                           NOT
-                           NULL,
-                           transaction_type
-                           TEXT
-                           NOT
-                           NULL,
-                           amount
-                           INTEGER
-                           NOT
-                           NULL,
-                           description
-                           TEXT,
-                           related_id
-                           INTEGER,
-                           created_at
-                           TIMESTAMP
-                           DEFAULT
-                           CURRENT_TIMESTAMP,
-                           FOREIGN
-                           KEY
-                       (
-                           user_id
-                       ) REFERENCES users
-                       (
-                           id
-                       )
-                           )''')
+                           id INTEGER PRIMARY KEY AUTOINCREMENT,
+                           user_id INTEGER NOT NULL,
+                           transaction_type TEXT NOT NULL,
+                           amount INTEGER NOT NULL,
+                           description TEXT,
+                           related_id INTEGER,
+                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                           FOREIGN KEY (user_id) REFERENCES users (id)
+                       )''')
 
         # Existing tables with minimal changes...
         cursor.execute('''
                        CREATE TABLE IF NOT EXISTS bookings
                        (
-                           id
-                           INTEGER
-                           PRIMARY
-                           KEY
-                           AUTOINCREMENT,
-                           user_id
-                           INTEGER,
-                           lab_id
-                           INTEGER,
-                           start_date
-                           DATE,
-                           end_date
-                           DATE,
-                           purpose
-                           TEXT,
-                           status
-                           TEXT
-                           DEFAULT
-                           'Pending',
-                           total_cost
-                           INTEGER,
-                           kic_cost
-                           INTEGER,
-                           payment_method
-                           TEXT
-                           DEFAULT
-                           'AED',
-                           created_at
-                           TIMESTAMP
-                           DEFAULT
-                           CURRENT_TIMESTAMP,
-                           FOREIGN
-                           KEY
-                       (
-                           user_id
-                       ) REFERENCES users
-                       (
-                           id
-                       ),
-                           FOREIGN KEY
-                       (
-                           lab_id
-                       ) REFERENCES labs
-                       (
-                           id
-                       )
-                           )''')
+                           id INTEGER PRIMARY KEY AUTOINCREMENT,
+                           user_id INTEGER,
+                           lab_id INTEGER,
+                           start_date DATE,
+                           end_date DATE,
+                           purpose TEXT,
+                           status TEXT DEFAULT 'Pending',
+                           total_cost INTEGER,
+                           kic_cost INTEGER,
+                           payment_method TEXT DEFAULT 'AED',
+                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                           FOREIGN KEY (user_id) REFERENCES users (id),
+                           FOREIGN KEY (lab_id) REFERENCES labs (id)
+                       )''')
 
         cursor.execute('''
                        CREATE TABLE IF NOT EXISTS reviews
                        (
-                           id
-                           INTEGER
-                           PRIMARY
-                           KEY
-                           AUTOINCREMENT,
-                           user_id
-                           INTEGER,
-                           item_type
-                           TEXT,
-                           item_id
-                           INTEGER,
-                           rating
-                           INTEGER,
-                           comment
-                           TEXT,
-                           created_at
-                           TIMESTAMP
-                           DEFAULT
-                           CURRENT_TIMESTAMP,
-                           FOREIGN
-                           KEY
-                       (
-                           user_id
-                       ) REFERENCES users
-                       (
-                           id
-                       )
-                           )''')
+                           id INTEGER PRIMARY KEY AUTOINCREMENT,
+                           user_id INTEGER,
+                           item_type TEXT,
+                           item_id INTEGER,
+                           rating INTEGER,
+                           comment TEXT,
+                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                           FOREIGN KEY (user_id) REFERENCES users (id)
+                       )''')
 
         cursor.execute('''
                        CREATE TABLE IF NOT EXISTS notifications
                        (
-                           id
-                           INTEGER
-                           PRIMARY
-                           KEY
-                           AUTOINCREMENT,
-                           user_id
-                           INTEGER,
-                           title
-                           TEXT,
-                           message
-                           TEXT,
-                           type
-                           TEXT,
-                           is_read
-                           BOOLEAN
-                           DEFAULT
-                           FALSE,
-                           created_at
-                           TIMESTAMP
-                           DEFAULT
-                           CURRENT_TIMESTAMP,
-                           FOREIGN
-                           KEY
-                       (
-                           user_id
-                       ) REFERENCES users
-                       (
-                           id
-                       )
-                           )''')
+                           id INTEGER PRIMARY KEY AUTOINCREMENT,
+                           user_id INTEGER,
+                           title TEXT,
+                           message TEXT,
+                           type TEXT,
+                           is_read BOOLEAN DEFAULT FALSE,
+                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                           FOREIGN KEY (user_id) REFERENCES users (id)
+                       )''')
 
         self.conn.commit()
 
@@ -651,21 +267,21 @@ class Database:
 
         # Seed companies
         companies_data = [
-            ("Dubai Future Foundation", "Leading government organization driving future innovation in UAE",
+            ("Dubai Future Foundation", "Leading government organization driving future innovation in UAE", 
              "Government", "Large", "Dubai", "https://dubaifuture.gov.ae", None, 2016, 50000, 15, 4.8, True),
-            ("Mubadala Investment Company", "Strategic investment company creating lasting value",
+            ("Mubadala Investment Company", "Strategic investment company creating lasting value", 
              "Investment", "Large", "Abu Dhabi", "https://mubadala.com", None, 2002, 75000, 22, 4.9, True),
-            ("ADNOC", "Leading energy and petrochemicals company",
+            ("ADNOC", "Leading energy and petrochemicals company", 
              "Energy", "Large", "Abu Dhabi", "https://adnoc.ae", None, 1971, 60000, 18, 4.7, True),
-            ("Noon", "E-commerce platform and technology company",
+            ("Noon", "E-commerce platform and technology company", 
              "Technology", "Large", "Dubai", "https://noon.com", None, 2016, 40000, 12, 4.6, True),
-            ("Emaar Properties", "Leading real estate development company",
+            ("Emaar Properties", "Leading real estate development company", 
              "Real Estate", "Large", "Dubai", "https://emaar.com", None, 1997, 45000, 20, 4.5, True),
         ]
 
         cursor.executemany('''
-                           INSERT INTO companies (name, description, industry, size, location, website,
-                                                  logo_url, founded_year, kic_balance, total_projects_posted,
+                           INSERT INTO companies (name, description, industry, size, location, website, 
+                                                  logo_url, founded_year, kic_balance, total_projects_posted, 
                                                   rating, is_verified)
                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                            ''', companies_data)
@@ -673,9 +289,9 @@ class Database:
         # Enhanced users with social features
         enhanced_users = [
             ("ahmed.mansouri@example.com", hashlib.sha256("password123".encode()).hexdigest(),
-             "Ahmed Al Mansouri", "talent", "Tech Innovations LLC",
+             "Ahmed Al Mansouri", "talent", "Tech Innovations LLC", 
              "Robotics Engineer specializing in AI-driven automation systems. 5+ years experience in industrial robotics.",
-             "Abu Dhabi", None, "https://linkedin.com/in/ahmed-mansouri", "https://robotics-portfolio.ae",
+             "Abu Dhabi", None, "https://linkedin.com/in/ahmed-mansouri", "https://robotics-portfolio.ae", 
              1500, 15, 450, True),
             ("fatima.zaabi@example.com", hashlib.sha256("password123".encode()).hexdigest(),
              "Dr. Fatima Al Zaabi", "talent", "Analytics Solutions",
@@ -705,7 +321,7 @@ class Database:
              "AI/ML expertise, smart city experience, IoT knowledge, Arabic language preferred",
              "AI,Smart City,IoT,Machine Learning,Arabic", 80000, 120000, 4000, 6000, "Active",
              "projects@dubaifuture.gov.ae", 234, 18, "Innovation", "High", True),
-
+            
             ("Blockchain Supply Chain Transparency", "Mubadala Investment Company", 2, "Abu Dhabi",
              "2024-07-30", "2024-02-05",
              "Create blockchain solution for supply chain transparency in healthcare and pharmaceuticals.",
@@ -717,20 +333,20 @@ class Database:
         cursor.executemany('''
                            INSERT INTO projects (title, organization, company_id, location, deadline, posted,
                                                  description, requirements, tags, budget_min, budget_max,
-                                                 kic_budget_min, kic_budget_max, status, contact, views,
+                                                 kic_budget_min, kic_budget_max, status, contact, views, 
                                                  applications, project_type, urgency, remote_possible)
                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                            ''', enhanced_projects)
 
         # Sample activities for feed
         activities_data = [
-            (1, "project_completed", "Completed Robotics Automation Project",
+            (1, "project_completed", "Completed Robotics Automation Project", 
              "Successfully delivered industrial automation solution for manufacturing company", 1),
-            (2, "skill_certified", "Earned AI/ML Certification",
+            (2, "skill_certified", "Earned AI/ML Certification", 
              "Completed advanced certification in Machine Learning from Stanford Online", None),
-            (1, "connection_made", "Connected with Dr. Fatima Al Zaabi",
+            (1, "connection_made", "Connected with Dr. Fatima Al Zaabi", 
              "New professional connection in Data Science field", 2),
-            (2, "project_started", "Started Healthcare Analytics Project",
+            (2, "project_started", "Started Healthcare Analytics Project", 
              "Beginning new project on predictive analytics for patient outcomes", 2),
         ]
 
@@ -1045,20 +661,10 @@ class EnhancedAuthManager:
     def login(email: str, password: str, db: Database) -> Optional[Dict]:
         cursor = db.conn.cursor()
         cursor.execute("""
-                       SELECT id,
-                              email,
-                              name,
-                              user_type,
-                              organization,
-                              bio,
-                              location,
-                              kic_balance,
-                              total_projects_completed,
-                              reputation_score,
-                              is_verified
+                       SELECT id, email, name, user_type, organization, bio, location,
+                              kic_balance, total_projects_completed, reputation_score, is_verified
                        FROM users
-                       WHERE email = ?
-                         AND password_hash = ?
+                       WHERE email = ? AND password_hash = ?
                        """, (email, EnhancedAuthManager.hash_password(password)))
 
         user = cursor.fetchone()
@@ -1072,10 +678,10 @@ class EnhancedAuthManager:
         try:
             cursor = db.conn.cursor()
             cursor.execute("""
-                           INSERT INTO users (email, password_hash, name, user_type,
+                           INSERT INTO users (email, password_hash, name, user_type, 
                                               organization, location, kic_balance)
                            VALUES (?, ?, ?, ?, ?, ?, ?)
-                           """, (email, EnhancedAuthManager.hash_password(password),
+                           """, (email, EnhancedAuthManager.hash_password(password), 
                                  name, user_type, organization, location, 1000))
             db.conn.commit()
             return True
@@ -1099,9 +705,8 @@ class SocialManager:
     def accept_connection(connection_id: int, db: Database):
         cursor = db.conn.cursor()
         cursor.execute("""
-                       UPDATE connections
-                       SET status      = 'accepted',
-                           accepted_at = CURRENT_TIMESTAMP
+                       UPDATE connections 
+                       SET status = 'accepted', accepted_at = CURRENT_TIMESTAMP
                        WHERE id = ?
                        """, (connection_id,))
         db.conn.commit()
@@ -1119,18 +724,18 @@ class SocialManager:
     def get_conversations(user_id: int, db: Database):
         cursor = db.conn.cursor()
         cursor.execute("""
-                       SELECT DISTINCT CASE
-                                           WHEN sender_id = ? THEN receiver_id
-                                           ELSE sender_id
-                                           END           AS other_user_id,
-                                       u.name,
-                                       u.user_type,
-                                       MAX(m.created_at) as last_message_time
+                       SELECT DISTINCT 
+                           CASE 
+                               WHEN sender_id = ? THEN receiver_id 
+                               ELSE sender_id 
+                           END AS other_user_id,
+                           u.name, u.user_type, 
+                           MAX(m.created_at) as last_message_time
                        FROM messages m
-                                JOIN users u ON u.id = CASE
-                                                           WHEN m.sender_id = ? THEN m.receiver_id
-                                                           ELSE m.sender_id
-                           END
+                       JOIN users u ON u.id = CASE 
+                           WHEN m.sender_id = ? THEN m.receiver_id 
+                           ELSE m.sender_id 
+                       END
                        WHERE ? IN (sender_id, receiver_id)
                        GROUP BY other_user_id, u.name, u.user_type
                        ORDER BY last_message_time DESC
@@ -1143,8 +748,8 @@ class SocialManager:
         cursor.execute("""
                        SELECT m.*, u.name as sender_name
                        FROM messages m
-                                JOIN users u ON m.sender_id = u.id
-                       WHERE (sender_id = ? AND receiver_id = ?)
+                       JOIN users u ON m.sender_id = u.id
+                       WHERE (sender_id = ? AND receiver_id = ?) 
                           OR (sender_id = ? AND receiver_id = ?)
                        ORDER BY created_at ASC
                        """, (user1_id, user2_id, user2_id, user1_id))
@@ -1155,40 +760,36 @@ class KICManager:
     """Manage KIC (Knowledge and Innovation Connected) currency"""
 
     @staticmethod
-    def transfer_kic(from_user_id: int, to_user_id: int, amount: int,
+    def transfer_kic(from_user_id: int, to_user_id: int, amount: int, 
                      description: str, db: Database) -> bool:
         cursor = db.conn.cursor()
-
+        
         # Check balance
         cursor.execute("SELECT kic_balance FROM users WHERE id = ?", (from_user_id,))
         balance = cursor.fetchone()[0]
-
+        
         if balance >= amount:
             # Deduct from sender
             cursor.execute("""
-                           UPDATE users
-                           SET kic_balance = kic_balance - ?
-                           WHERE id = ?
+                           UPDATE users SET kic_balance = kic_balance - ? WHERE id = ?
                            """, (amount, from_user_id))
-
+            
             # Add to receiver
             cursor.execute("""
-                           UPDATE users
-                           SET kic_balance = kic_balance + ?
-                           WHERE id = ?
+                           UPDATE users SET kic_balance = kic_balance + ? WHERE id = ?
                            """, (amount, to_user_id))
-
+            
             # Record transactions
             cursor.execute("""
                            INSERT INTO kic_transactions (user_id, transaction_type, amount, description)
                            VALUES (?, 'sent', ?, ?)
                            """, (from_user_id, -amount, description))
-
+            
             cursor.execute("""
                            INSERT INTO kic_transactions (user_id, transaction_type, amount, description)
                            VALUES (?, 'received', ?, ?)
                            """, (to_user_id, amount, description))
-
+            
             db.conn.commit()
             return True
         return False
@@ -1203,10 +804,10 @@ class KICManager:
     def get_kic_transactions(user_id: int, db: Database, limit: int = 10):
         cursor = db.conn.cursor()
         cursor.execute("""
-                       SELECT *
-                       FROM kic_transactions
-                       WHERE user_id = ?
-                       ORDER BY created_at DESC LIMIT ?
+                       SELECT * FROM kic_transactions 
+                       WHERE user_id = ? 
+                       ORDER BY created_at DESC 
+                       LIMIT ?
                        """, (user_id, limit))
         return cursor.fetchall()
 
@@ -1214,9 +815,9 @@ class KICManager:
 # ==================== ENHANCED PAGES ====================
 def show_enhanced_login_page(db: Database):
     """Enhanced login page with professional styling"""
-
+    
     col1, col2, col3 = st.columns([1, 2, 1])
-
+    
     with col2:
         st.markdown('''
         <div style="text-align: center; margin-bottom: 2rem;">
@@ -1240,13 +841,13 @@ def show_enhanced_login_page(db: Database):
             with st.form("login_form"):
                 email = st.text_input("Work Email", placeholder="your.name@company.com")
                 password = st.text_input("Password", type="password")
-
+                
                 col1, col2 = st.columns(2)
                 with col1:
                     remember_me = st.checkbox("Keep me signed in")
                 with col2:
-                    st.markdown('<a href="#" style="float: right; color: #0077b5;">Forgot password?</a>',
-                                unsafe_allow_html=True)
+                    st.markdown('<a href="#" style="float: right; color: #0077b5;">Forgot password?</a>', 
+                               unsafe_allow_html=True)
 
                 if st.form_submit_button("Sign In", use_container_width=True):
                     user = EnhancedAuthManager.login(email, password, db)
@@ -1265,21 +866,20 @@ def show_enhanced_login_page(db: Database):
                 with col1:
                     name = st.text_input("Full Name *")
                     email = st.text_input("Work Email *")
-                    location = st.selectbox("Location",
-                                            ["Abu Dhabi", "Dubai", "Sharjah", "Ajman", "Ras Al Khaimah", "Fujairah",
-                                             "Umm Al Quwain"])
+                    location = st.selectbox("Location", 
+                                           ["Abu Dhabi", "Dubai", "Sharjah", "Ajman", "Ras Al Khaimah", "Fujairah", "Umm Al Quwain"])
                 with col2:
                     password = st.text_input("Password *", type="password")
                     confirm_password = st.text_input("Confirm Password *", type="password")
                     user_type = st.selectbox("I'm joining as", ["Talent", "Company Representative", "Researcher"])
 
                 organization = st.text_input("Organization/University *")
-
+                
                 st.markdown("#### Why are you joining? (Optional)")
                 join_reason = st.multiselect("Select all that apply:",
-                                             ["Find talented professionals", "Discover research opportunities",
-                                              "Access testing facilities", "Collaborate on projects",
-                                              "Share knowledge", "Build professional network"])
+                                           ["Find talented professionals", "Discover research opportunities", 
+                                            "Access testing facilities", "Collaborate on projects", 
+                                            "Share knowledge", "Build professional network"])
 
                 terms = st.checkbox("I agree to the Terms of Service and Privacy Policy *")
 
@@ -1292,7 +892,7 @@ def show_enhanced_login_page(db: Database):
                         st.error("Please fill in all required fields")
                     else:
                         success = EnhancedAuthManager.register(email, password, name,
-                                                               user_type.lower(), organization, location, db)
+                                                             user_type.lower(), organization, location, db)
                         if success:
                             st.success("🎉 Welcome to UAE Innovate Hub! Please sign in with your new account.")
                             st.balloons()
@@ -1303,9 +903,9 @@ def show_enhanced_login_page(db: Database):
 
 def show_enhanced_dashboard(db: Database):
     """Enhanced dashboard with social media features"""
-
+    
     user = st.session_state.user
-
+    
     st.markdown(f'''
     <div style="margin-bottom: 2rem;">
         <h1 class="gradient-text">Welcome back, {user['name']}! 👋</h1>
@@ -1318,9 +918,9 @@ def show_enhanced_dashboard(db: Database):
 
     # Professional metrics row
     col1, col2, col3, col4, col5 = st.columns(5)
-
+    
     cursor = db.conn.cursor()
-
+    
     with col1:
         cursor.execute("SELECT COUNT(*) FROM users WHERE user_type = 'talent'")
         talent_count = cursor.fetchone()[0]
@@ -1364,10 +964,8 @@ def show_enhanced_dashboard(db: Database):
     with col5:
         # Personal network size
         cursor.execute("""
-                       SELECT COUNT(*)
-                       FROM connections
-                       WHERE (requester_id = ? OR addressee_id = ?)
-                         AND status = 'accepted'
+                       SELECT COUNT(*) FROM connections 
+                       WHERE (requester_id = ? OR addressee_id = ?) AND status = 'accepted'
                        """, (user['id'], user['id']))
         network_size = cursor.fetchone()[0]
         st.markdown(f'''
@@ -1385,12 +983,13 @@ def show_enhanced_dashboard(db: Database):
     with col1:
         # Activity Feed
         st.markdown("### 📈 Network Activity")
-
+        
         cursor.execute("""
-                       SELECT a.*, u.name, u.user_type
+                       SELECT a.*, u.name, u.user_type 
                        FROM activities a
-                                JOIN users u ON a.user_id = u.id
-                       ORDER BY a.created_at DESC LIMIT 10
+                       JOIN users u ON a.user_id = u.id
+                       ORDER BY a.created_at DESC
+                       LIMIT 10
                        """)
         activities = cursor.fetchall()
 
@@ -1403,9 +1002,9 @@ def show_enhanced_dashboard(db: Database):
                 "lab_booked": "🔬",
                 "review_received": "⭐"
             }
-
+            
             icon = icon_map.get(activity['activity_type'], "📋")
-
+            
             st.markdown(f'''
             <div class="activity-item">
                 <div style="display: flex; align-items: center; gap: 1rem;">
@@ -1425,16 +1024,16 @@ def show_enhanced_dashboard(db: Database):
         # Trending Projects
         st.markdown("### 🔥 Trending Projects")
         cursor.execute("""
-                       SELECT *
-                       FROM projects
+                       SELECT * FROM projects 
                        WHERE status = 'Active'
-                       ORDER BY views DESC, applications DESC LIMIT 3
+                       ORDER BY views DESC, applications DESC
+                       LIMIT 3
                        """)
         trending_projects = cursor.fetchall()
 
         for project in trending_projects:
             urgency_class = f"urgency-{project['urgency'].lower()}"
-
+            
             st.markdown(f'''
             <div class="modern-card">
                 <div style="display: flex; justify-content: space-between; align-items: start;">
@@ -1484,9 +1083,9 @@ def show_enhanced_dashboard(db: Database):
 
         # KIC Balance and Recent Transactions
         st.markdown("### 💰 KIC Wallet")
-
+        
         kic_transactions = KICManager.get_kic_transactions(user['id'], db, 5)
-
+        
         st.markdown(f'''
         <div class="modern-card">
             <div style="text-align: center; margin-bottom: 1rem;">
@@ -1502,7 +1101,7 @@ def show_enhanced_dashboard(db: Database):
             for txn in kic_transactions:
                 color = "#16a34a" if txn['amount'] > 0 else "#dc2626"
                 sign = "+" if txn['amount'] > 0 else ""
-
+                
                 st.markdown(f'''
                 <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #e2e8f0;">
                     <div>
@@ -1519,19 +1118,19 @@ def show_enhanced_dashboard(db: Database):
 
         # Quick Actions
         st.markdown("### ⚡ Quick Actions")
-
+        
         if st.button("💬 Messages", use_container_width=True):
             st.session_state.current_page = "Messages"
             st.rerun()
-
+            
         if st.button("🔍 Find Talent", use_container_width=True):
             st.session_state.current_page = "Talents"
             st.rerun()
-
+            
         if st.button("📋 Browse Projects", use_container_width=True):
             st.session_state.current_page = "Projects"
             st.rerun()
-
+            
         if st.button("🏢 Explore Labs", use_container_width=True):
             st.session_state.current_page = "Labs"
             st.rerun()
@@ -1539,21 +1138,21 @@ def show_enhanced_dashboard(db: Database):
 
 def show_enhanced_talents_page(db: Database):
     """Enhanced talents page with social features"""
-
+    
     st.markdown('<h1 class="gradient-text">Talent Network</h1>', unsafe_allow_html=True)
     st.markdown("Connect with UAE's top innovators, researchers, and industry experts")
 
     # Search and filters
     col1, col2, col3 = st.columns([3, 1, 1])
-
+    
     with col1:
-        search_query = st.text_input("🔍 Search talents...",
-                                     placeholder="Search by name, skills, title, or expertise")
+        search_query = st.text_input("🔍 Search talents...", 
+                                   placeholder="Search by name, skills, title, or expertise")
 
     with col2:
-        sort_option = st.selectbox("Sort by",
-                                   ["Best Match", "Reputation Score", "Project Count",
-                                    "Rating", "Recently Active"])
+        sort_option = st.selectbox("Sort by", 
+                                 ["Best Match", "Reputation Score", "Project Count", 
+                                  "Rating", "Recently Active"])
 
     with col3:
         view_mode = st.radio("View", ["Professional", "Compact"], horizontal=True)
@@ -1561,35 +1160,30 @@ def show_enhanced_talents_page(db: Database):
     # Advanced filters
     with st.expander("🔧 Advanced Filters", expanded=False):
         col1, col2, col3, col4 = st.columns(4)
-
+        
         with col1:
             cursor = db.conn.cursor()
             cursor.execute("SELECT DISTINCT location FROM talents")
             locations = [row[0] for row in cursor.fetchall()]
             selected_locations = st.multiselect("Locations", locations)
-
+            
         with col2:
             availability_options = ["Full-time", "Part-time", "Contract", "Remote"]
             selected_availability = st.multiselect("Availability", availability_options)
-
+            
         with col3:
             rate_range = st.slider("Hourly rate (AED)", 0, 500, (0, 500))
-
+            
         with col4:
             min_projects = st.slider("Min. projects completed", 0, 50, 0)
 
     # Fetch and filter talents
     query = """
-            SELECT t.*, \
-                   u.name, \
-                   u.email, \
-                   u.location as user_location, \
-                   u.is_verified,
-                   u.reputation_score, \
-                   u.total_projects_completed
+            SELECT t.*, u.name, u.email, u.location as user_location, u.is_verified,
+                   u.reputation_score, u.total_projects_completed
             FROM talents t
-                     JOIN users u ON t.user_id = u.id
-            WHERE 1 = 1
+            JOIN users u ON t.user_id = u.id
+            WHERE 1=1
             """
     params = []
 
@@ -1659,8 +1253,8 @@ def show_enhanced_talents_page(db: Database):
                             {talent['bio'][:200]}{'...' if len(talent['bio']) > 200 else ''}
                         </div>
                         <div style="margin-bottom: 1rem;">
-                            {' '.join([f'<span class="skill-tag">{skill.strip()}</span>'
-                                       for skill in talent['skills'].split(',')[:6]])}
+                            {' '.join([f'<span class="skill-tag">{skill.strip()}</span>' 
+                                     for skill in talent['skills'].split(',')[:6]])}
                         </div>
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <div>
@@ -1702,7 +1296,7 @@ def show_enhanced_talents_page(db: Database):
     else:  # Compact view
         for talent in talents:
             col1, col2, col3, col4, col5 = st.columns([3, 2, 1, 1, 1])
-
+            
             with col1:
                 verified_badge = "✓" if talent['is_verified'] else ""
                 st.markdown(f"**{talent['name']} {verified_badge}**  \n{talent['title']}")
@@ -1720,7 +1314,7 @@ def show_enhanced_talents_page(db: Database):
 
 def show_enhanced_companies_page(db: Database):
     """New companies page"""
-
+    
     st.markdown('<h1 class="gradient-text">Partner Companies</h1>', unsafe_allow_html=True)
     st.markdown("Discover innovative companies driving UAE's future")
 
@@ -1730,7 +1324,7 @@ def show_enhanced_companies_page(db: Database):
 
     # Company metrics
     col1, col2, col3, col4 = st.columns(4)
-
+    
     with col1:
         st.markdown(f'''
         <div class="metric-card">
@@ -1835,29 +1429,29 @@ def show_enhanced_companies_page(db: Database):
 
 def show_enhanced_messages_page(db: Database):
     """New messaging system"""
-
+    
     user = st.session_state.user
-
+    
     st.markdown('<h1 class="gradient-text">💬 Messages</h1>', unsafe_allow_html=True)
 
     col1, col2 = st.columns([1, 2])
 
     with col1:
         st.markdown("### Conversations")
-
+        
         conversations = SocialManager.get_conversations(user['id'], db)
-
+        
         if conversations:
             for conv in conversations:
                 with st.container():
-                    if st.button(f"👤 {conv['name']}",
-                                 key=f"conv_{conv['other_user_id']}",
-                                 use_container_width=True):
+                    if st.button(f"👤 {conv['name']}", 
+                               key=f"conv_{conv['other_user_id']}",
+                               use_container_width=True):
                         st.session_state.active_conversation = conv['other_user_id']
                         st.rerun()
-
-                    st.markdown(f"<small>{conv['user_type']} • {conv['last_message_time'][:16]}</small>",
-                                unsafe_allow_html=True)
+                    
+                    st.markdown(f"<small>{conv['user_type']} • {conv['last_message_time'][:16]}</small>", 
+                               unsafe_allow_html=True)
                     st.markdown("---")
         else:
             st.info("No conversations yet. Connect with talents to start messaging!")
@@ -1866,17 +1460,17 @@ def show_enhanced_messages_page(db: Database):
         st.markdown("### Start New Conversation")
         cursor = db.conn.cursor()
         cursor.execute("""
-                       SELECT u.id, u.name, u.user_type
-                       FROM users u
-                       WHERE u.id != ?
+                       SELECT u.id, u.name, u.user_type 
+                       FROM users u 
+                       WHERE u.id != ? 
                        ORDER BY u.name
                        """, (user['id'],))
         all_users = cursor.fetchall()
-
-        selected_user = st.selectbox("Select user",
-                                     [(u['id'], f"{u['name']} ({u['user_type']})") for u in all_users],
-                                     format_func=lambda x: x[1])
-
+        
+        selected_user = st.selectbox("Select user", 
+                                   [(u['id'], f"{u['name']} ({u['user_type']})") for u in all_users],
+                                   format_func=lambda x: x[1])
+        
         if st.button("Start Conversation"):
             st.session_state.active_conversation = selected_user[0]
             st.rerun()
@@ -1884,22 +1478,22 @@ def show_enhanced_messages_page(db: Database):
     with col2:
         if 'active_conversation' in st.session_state:
             other_user_id = st.session_state.active_conversation
-
+            
             # Get other user info
             cursor = db.conn.cursor()
             cursor.execute("SELECT name, user_type FROM users WHERE id = ?", (other_user_id,))
             other_user = cursor.fetchone()
-
+            
             st.markdown(f"### 💬 Chat with {other_user['name']}")
-
+            
             # Message history
             messages = SocialManager.get_messages(user['id'], other_user_id, db)
-
+            
             st.markdown('<div class="chat-container">', unsafe_allow_html=True)
-
+            
             for message in messages:
                 bubble_class = "sent" if message['sender_id'] == user['id'] else "received"
-
+                
                 st.markdown(f'''
                 <div class="message-bubble {bubble_class}">
                     <div style="font-size: 0.9rem;">{message['message']}</div>
@@ -1908,9 +1502,9 @@ def show_enhanced_messages_page(db: Database):
                     </div>
                 </div>
                 ''', unsafe_allow_html=True)
-
+            
             st.markdown('</div>', unsafe_allow_html=True)
-
+            
             # Send new message
             with st.form("send_message", clear_on_submit=True):
                 message_text = st.text_input("Type your message...", key="message_input")
@@ -1954,13 +1548,13 @@ def main():
             </div>
         </div>
     </div>
-    '''.format(st.session_state.user['kic_balance'], st.session_state.user['name']),
-                unsafe_allow_html=True)
+    '''.format(st.session_state.user['kic_balance'], st.session_state.user['name']), 
+               unsafe_allow_html=True)
 
     # Enhanced navigation menu
     pages = {
         "Home": "🏠",
-        "Talents": "👥",
+        "Talents": "👥", 
         "Companies": "🏢",
         "Projects": "📋",
         "Labs": "🔬",
@@ -2001,15 +1595,15 @@ def main():
 
 def show_kic_hub_page(db: Database):
     """KIC (Knowledge and Innovation Connected) Hub page"""
-
+    
     user = st.session_state.user
-
+    
     st.markdown('<h1 class="gradient-text">💰 KIC Hub</h1>', unsafe_allow_html=True)
     st.markdown("**Knowledge and Innovation Connected** - The future of innovation economy")
 
     # KIC Balance Overview
     col1, col2, col3 = st.columns(3)
-
+    
     with col1:
         st.markdown(f'''
         <div class="profile-card">
@@ -2025,7 +1619,7 @@ def show_kic_hub_page(db: Database):
         cursor = db.conn.cursor()
         cursor.execute("SELECT SUM(amount) FROM kic_transactions WHERE user_id = ? AND amount > 0", (user['id'],))
         total_earned = cursor.fetchone()[0] or 0
-
+        
         st.markdown(f'''
         <div class="modern-card" style="text-align: center; padding: 2rem;">
             <h3>Total Earned</h3>
@@ -2038,7 +1632,7 @@ def show_kic_hub_page(db: Database):
     with col3:
         cursor.execute("SELECT SUM(amount) FROM kic_transactions WHERE user_id = ? AND amount < 0", (user['id'],))
         total_spent = abs(cursor.fetchone()[0] or 0)
-
+        
         st.markdown(f'''
         <div class="modern-card" style="text-align: center; padding: 2rem;">
             <h3>Total Spent</h3>
@@ -2055,15 +1649,15 @@ def show_kic_hub_page(db: Database):
 
     with tab1:
         st.markdown("### Recent Transactions")
-
+        
         transactions = KICManager.get_kic_transactions(user['id'], db, 20)
-
+        
         if transactions:
             for txn in transactions:
                 color = "#16a34a" if txn['amount'] > 0 else "#dc2626"
                 sign = "+" if txn['amount'] > 0 else ""
                 icon = "📈" if txn['amount'] > 0 else "📉"
-
+                
                 st.markdown(f'''
                 <div class="modern-card">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -2086,14 +1680,14 @@ def show_kic_hub_page(db: Database):
 
     with tab2:
         st.markdown("### KIC Analytics")
-
+        
         # Monthly earning chart
         dates = pd.date_range(start='2024-01-01', periods=30, freq='D')
-        earnings = [50 + i * 5 + (i % 7) * 20 for i in range(30)]
-
-        fig = px.line(x=dates, y=earnings,
-                      title="Daily KIC Earnings",
-                      labels={'x': 'Date', 'y': 'KIC Earned'})
+        earnings = [50 + i*5 + (i%7)*20 for i in range(30)]
+        
+        fig = px.line(x=dates, y=earnings, 
+                     title="Daily KIC Earnings",
+                     labels={'x': 'Date', 'y': 'KIC Earned'})
         fig.update_traces(line_color='#f59e0b', line_width=3)
         fig.update_layout(
             plot_bgcolor='rgba(0,0,0,0)',
@@ -2104,23 +1698,23 @@ def show_kic_hub_page(db: Database):
 
     with tab3:
         st.markdown("### Transfer KIC")
-
+        
         col1, col2 = st.columns(2)
-
+        
         with col1:
             st.markdown("#### Send KIC")
             with st.form("send_kic"):
                 cursor = db.conn.cursor()
                 cursor.execute("SELECT id, name FROM users WHERE id != ?", (user['id'],))
                 other_users = cursor.fetchall()
-
-                recipient = st.selectbox("Send to",
-                                         [(u['id'], u['name']) for u in other_users],
-                                         format_func=lambda x: x[1])
-
+                
+                recipient = st.selectbox("Send to", 
+                                        [(u['id'], u['name']) for u in other_users],
+                                        format_func=lambda x: x[1])
+                
                 amount = st.number_input("Amount (KIC)", min_value=1, max_value=user['kic_balance'], value=100)
                 description = st.text_input("Description", value="KIC Transfer")
-
+                
                 if st.form_submit_button("Send KIC 💸"):
                     success = KICManager.transfer_kic(user['id'], recipient[0], amount, description, db)
                     if success:
@@ -2133,19 +1727,19 @@ def show_kic_hub_page(db: Database):
         with col2:
             st.markdown("#### Request KIC")
             with st.form("request_kic"):
-                requester = st.selectbox("Request from",
-                                         [(u['id'], u['name']) for u in other_users],
-                                         format_func=lambda x: x[1])
-
+                requester = st.selectbox("Request from", 
+                                       [(u['id'], u['name']) for u in other_users],
+                                       format_func=lambda x: x[1])
+                
                 req_amount = st.number_input("Amount (KIC)", min_value=1, value=100)
                 req_reason = st.text_input("Reason", value="Payment for services")
-
+                
                 if st.form_submit_button("Send Request 📧"):
                     st.success(f"KIC request sent to {requester[1]}!")
 
     with tab4:
         st.markdown("### Earn More KIC")
-
+        
         earning_opportunities = [
             {
                 "title": "Complete Profile",
@@ -2205,15 +1799,15 @@ def show_kic_hub_page(db: Database):
 
 def show_enhanced_projects_page(db: Database):
     """Enhanced projects page with KIC integration"""
-
+    
     st.markdown('<h1 class="gradient-text">🚀 Innovation Projects</h1>', unsafe_allow_html=True)
     st.markdown("Discover cutting-edge projects and collaboration opportunities")
 
     # Project metrics
     col1, col2, col3, col4 = st.columns(4)
-
+    
     cursor = db.conn.cursor()
-
+    
     with col1:
         cursor.execute("SELECT COUNT(*) FROM projects WHERE status = 'Active'")
         active_count = cursor.fetchone()[0]
@@ -2274,16 +1868,13 @@ def show_enhanced_projects_page(db: Database):
 
 def show_enhanced_projects_by_status(db: Database, status: str):
     """Enhanced project display with KIC integration"""
-
+    
     cursor = db.conn.cursor()
     cursor.execute("""
-                   SELECT p.*,
-                          c.name                                 as company_name,
-                          c.industry,
-                          c.is_verified                          as company_verified,
+                   SELECT p.*, c.name as company_name, c.industry, c.is_verified as company_verified,
                           julianday(deadline) - julianday('now') as days_left
                    FROM projects p
-                            LEFT JOIN companies c ON p.company_id = c.id
+                   LEFT JOIN companies c ON p.company_id = c.id
                    WHERE p.status = ?
                    ORDER BY p.views DESC, p.created_at DESC
                    """, (status,))
@@ -2296,7 +1887,7 @@ def show_enhanced_projects_by_status(db: Database, status: str):
     for project in projects:
         days_left = int(project['days_left']) if project['days_left'] else 0
         urgency_class = f"urgency-{project['urgency'].lower()}"
-
+        
         st.markdown(f'''
         <div class="modern-card">
             <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
@@ -2317,7 +1908,7 @@ def show_enhanced_projects_by_status(db: Database, status: str):
                     </div>
                 </div>
             </div>
-
+            
             <div style="margin-bottom: 1rem;">
                 <span>📍 {project['location']}</span> • 
                 <span class="{urgency_class}">⚡ {project['urgency']} Priority</span> • 
@@ -2326,16 +1917,16 @@ def show_enhanced_projects_by_status(db: Database, status: str):
                 <span>📝 {project['applications']} applications</span>
                 {f" • 🌐 Remote OK" if project['remote_possible'] else ""}
             </div>
-
+            
             <div style="color: #475569; margin-bottom: 1.5rem; line-height: 1.6;">
                 {project['description']}
             </div>
-
+            
             <div style="margin-bottom: 1rem;">
                 <strong style="color: #1e293b;">Requirements:</strong>
                 <div style="color: #64748b; margin-top: 0.5rem;">{project['requirements']}</div>
             </div>
-
+            
             <div style="margin-bottom: 1rem;">
                 {' '.join([f'<span class="skill-tag">{tag.strip()}</span>' for tag in project['tags'].split(',')])}
             </div>
@@ -2350,17 +1941,17 @@ def show_enhanced_projects_by_status(db: Database, status: str):
                 db.conn.commit()
                 st.session_state.selected_project_id = project['id']
                 st.rerun()
-
+        
         with col2:
             if st.button("🚀 Apply Now", key=f"apply_proj_{project['id']}"):
                 st.session_state.apply_project_id = project['id']
                 st.rerun()
-
+        
         with col3:
             if st.button("💬 Ask Question", key=f"question_proj_{project['id']}"):
                 st.session_state.question_project_id = project['id']
                 st.rerun()
-
+        
         with col4:
             if st.button("⭐ Save", key=f"save_proj_{project['id']}"):
                 st.success("Project saved!")
@@ -2368,28 +1959,25 @@ def show_enhanced_projects_by_status(db: Database, status: str):
 
 def show_enhanced_projects_by_urgency(db: Database, urgency: str):
     """Show projects by urgency level"""
-
+    
     cursor = db.conn.cursor()
     cursor.execute("""
-                   SELECT p.*,
-                          c.name                                 as company_name,
-                          c.industry,
+                   SELECT p.*, c.name as company_name, c.industry,
                           julianday(deadline) - julianday('now') as days_left
                    FROM projects p
-                            LEFT JOIN companies c ON p.company_id = c.id
-                   WHERE p.urgency = ?
-                     AND p.status = 'Active'
+                   LEFT JOIN companies c ON p.company_id = c.id
+                   WHERE p.urgency = ? AND p.status = 'Active'
                    ORDER BY p.deadline ASC
                    """, (urgency,))
-
+    
     urgent_projects = cursor.fetchall()
-
+    
     if urgent_projects:
         st.markdown(f"### ⚡ {urgency} Priority Projects - Act Fast!")
-
+        
         for project in urgent_projects:
             days_left = int(project['days_left']) if project['days_left'] else 0
-
+            
             st.markdown(f'''
             <div class="modern-card" style="border-left: 4px solid #dc2626;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -2418,21 +2006,20 @@ def show_enhanced_projects_by_urgency(db: Database, urgency: str):
 
 def show_enhanced_high_value_projects(db: Database):
     """Show high-value projects"""
-
+    
     cursor = db.conn.cursor()
     cursor.execute("""
                    SELECT p.*, c.name as company_name, c.industry
                    FROM projects p
-                            LEFT JOIN companies c ON p.company_id = c.id
-                   WHERE p.kic_budget_max >= 3000
-                     AND p.status = 'Active'
+                   LEFT JOIN companies c ON p.company_id = c.id
+                   WHERE p.kic_budget_max >= 3000 AND p.status = 'Active'
                    ORDER BY p.kic_budget_max DESC
                    """)
-
+    
     high_value_projects = cursor.fetchall()
-
+    
     st.markdown("### 💎 Premium Projects - High Value Opportunities")
-
+    
     for project in high_value_projects:
         st.markdown(f'''
         <div class="modern-card" style="border: 2px solid #f59e0b; background: linear-gradient(135deg, rgba(251, 191, 36, 0.05), rgba(245, 158, 11, 0.05));">
@@ -2465,10 +2052,10 @@ def show_enhanced_high_value_projects(db: Database):
 
 def show_my_applications(db: Database):
     """Show user's project applications"""
-
+    
     st.markdown("### 📋 My Project Applications")
     st.info("Application tracking feature coming soon! You'll be able to see all your submitted applications here.")
-
+    
     # Placeholder for applications
     sample_applications = [
         {
@@ -2479,17 +2066,17 @@ def show_my_applications(db: Database):
             "kic_amount": "6000 KIC"
         },
         {
-            "project": "Blockchain Supply Chain Transparency",
+            "project": "Blockchain Supply Chain Transparency", 
             "company": "Mubadala Investment Company",
             "status": "Accepted",
             "applied_date": "2024-02-10",
             "kic_amount": "4500 KIC"
         }
     ]
-
+    
     for app in sample_applications:
         status_color = "#16a34a" if app['status'] == "Accepted" else "#f59e0b"
-
+        
         st.markdown(f'''
         <div class="modern-card">
             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -2514,15 +2101,15 @@ def show_my_applications(db: Database):
 
 def show_enhanced_labs_page(db: Database):
     """Enhanced labs page with KIC payments"""
-
+    
     st.markdown('<h1 class="gradient-text">🔬 Innovation Labs</h1>', unsafe_allow_html=True)
     st.markdown("Access cutting-edge research facilities across the UAE")
 
     # Lab metrics
     col1, col2, col3, col4 = st.columns(4)
-
+    
     cursor = db.conn.cursor()
-
+    
     with col1:
         cursor.execute("SELECT COUNT(*) FROM labs")
         total_labs = cursor.fetchone()[0]
@@ -2567,10 +2154,10 @@ def show_enhanced_labs_page(db: Database):
 
     # Search and filters
     col1, col2, col3 = st.columns([3, 1, 1])
-
+    
     with col1:
-        search_query = st.text_input("🔍 Search labs...",
-                                     placeholder="Search by name, equipment, or specialty")
+        search_query = st.text_input("🔍 Search labs...", 
+                                   placeholder="Search by name, equipment, or specialty")
 
     with col2:
         sort_by = st.selectbox("Sort by", ["Rating", "Price", "KIC Price", "Availability"])
@@ -2581,23 +2168,23 @@ def show_enhanced_labs_page(db: Database):
     # Enhanced filters
     with st.expander("🔧 Advanced Filters", expanded=False):
         col1, col2, col3, col4 = st.columns(4)
-
+        
         with col1:
             cursor.execute("SELECT DISTINCT specialty FROM labs")
             specialties = [row[0] for row in cursor.fetchall()]
             selected_specialties = st.multiselect("Specialties", specialties)
-
+            
         with col2:
             cursor.execute("SELECT DISTINCT location FROM labs")
             locations = [row[0] for row in cursor.fetchall()]
             selected_locations = st.multiselect("Locations", locations)
-
+            
         with col3:
             if payment_method in ["Both", "AED"]:
                 aed_range = st.slider("AED Price per day", 0, 3000, (0, 3000))
             else:
                 aed_range = (0, 10000)
-
+                
         with col4:
             if payment_method in ["Both", "KIC"]:
                 kic_range = st.slider("KIC Price per day", 0, 1500, (0, 1500))
@@ -2674,15 +2261,15 @@ def show_enhanced_labs_page(db: Database):
                             <div style="margin-bottom: 1rem;">
                                 <strong>Equipment:</strong>
                                 <div style="margin-top: 0.5rem;">
-                                    {' '.join([f'<span class="skill-tag">{eq.strip()}</span>'
-                                               for eq in lab['equipment'].split(',')[:4]])}
+                                    {' '.join([f'<span class="skill-tag">{eq.strip()}</span>' 
+                                             for eq in lab['equipment'].split(',')[:4]])}
                                 </div>
                             </div>
                             <div style="margin-bottom: 1rem;">
                                 <strong>Amenities:</strong>
                                 <div style="margin-top: 0.5rem;">
-                                    {' '.join([f'<span class="skill-tag">{amenity.strip()}</span>'
-                                               for amenity in lab['amenities'].split(',')[:3]])}
+                                    {' '.join([f'<span class="skill-tag">{amenity.strip()}</span>' 
+                                             for amenity in lab['amenities'].split(',')[:3]])}
                                 </div>
                             </div>
                         </div>
@@ -2728,9 +2315,9 @@ def show_enhanced_labs_page(db: Database):
 
 def show_enhanced_profile_page(db: Database):
     """Enhanced profile page with social features"""
-
+    
     user = st.session_state.user
-
+    
     st.markdown(f'''
     <div style="margin-bottom: 2rem;">
         <h1 class="gradient-text">My Professional Profile</h1>
@@ -2753,7 +2340,7 @@ def show_enhanced_profile_page(db: Database):
                 {f'<span class="status-badge status-verified">✓ Verified</span>' if user['is_verified'] else ''}
                 <div style="opacity: 0.9; margin: 1rem 0;">{user['organization']}</div>
                 <div style="opacity: 0.8; margin-bottom: 1rem;">📍 {user.get('location', 'UAE')}</div>
-
+                
                 <div style="display: flex; justify-content: space-around; margin: 1.5rem 0;">
                     <div style="text-align: center;">
                         <div style="font-size: 1.5rem; font-weight: bold;">{user['total_projects_completed']}</div>
@@ -2774,10 +2361,8 @@ def show_enhanced_profile_page(db: Database):
             # Quick stats
             cursor = db.conn.cursor()
             cursor.execute("""
-                           SELECT COUNT(*)
-                           FROM connections
-                           WHERE (requester_id = ? OR addressee_id = ?)
-                             AND status = 'accepted'
+                           SELECT COUNT(*) FROM connections 
+                           WHERE (requester_id = ? OR addressee_id = ?) AND status = 'accepted'
                            """, (user['id'], user['id']))
             network_size = cursor.fetchone()[0]
 
@@ -2806,58 +2391,53 @@ def show_enhanced_profile_page(db: Database):
 
             with st.form("edit_profile"):
                 col_a, col_b = st.columns(2)
-
+                
                 with col_a:
                     name = st.text_input("Full Name", value=user['name'])
                     organization = st.text_input("Organization", value=user['organization'])
-                    location = st.selectbox("Location",
-                                            ["Abu Dhabi", "Dubai", "Sharjah", "Ajman", "Ras Al Khaimah", "Fujairah",
-                                             "Umm Al Quwain"],
-                                            index=0 if not user.get('location') else
-                                            ["Abu Dhabi", "Dubai", "Sharjah", "Ajman", "Ras Al Khaimah", "Fujairah",
-                                             "Umm Al Quwain"].index(user.get('location', 'Abu Dhabi')))
-
+                    location = st.selectbox("Location", 
+                                           ["Abu Dhabi", "Dubai", "Sharjah", "Ajman", "Ras Al Khaimah", "Fujairah", "Umm Al Quwain"],
+                                           index=0 if not user.get('location') else 
+                                           ["Abu Dhabi", "Dubai", "Sharjah", "Ajman", "Ras Al Khaimah", "Fujairah", "Umm Al Quwain"].index(user.get('location', 'Abu Dhabi')))
+                    
                 with col_b:
                     linkedin_url = st.text_input("LinkedIn Profile", value=user.get('linkedin_url', ''))
                     website_url = st.text_input("Website/Portfolio", value=user.get('website_url', ''))
                     phone = st.text_input("Phone Number", placeholder="+971 50 123 4567")
 
-                bio = st.text_area("Professional Bio",
-                                   value=user.get('bio', ''),
-                                   placeholder="Tell the community about your expertise, interests, and goals...")
-
+                bio = st.text_area("Professional Bio", 
+                                 value=user.get('bio', ''),
+                                 placeholder="Tell the community about your expertise, interests, and goals...")
+                
                 # Professional details for talents
                 if user['user_type'] == 'talent':
                     st.markdown("#### Talent-Specific Information")
-
+                    
                     col_c, col_d = st.columns(2)
                     with col_c:
                         title = st.text_input("Professional Title", placeholder="e.g., Senior Data Scientist")
-                        experience = st.selectbox("Years of Experience",
-                                                  ["0-1 years", "2-3 years", "4-5 years", "6-10 years", "10+ years"])
-
+                        experience = st.selectbox("Years of Experience", 
+                                                ["0-1 years", "2-3 years", "4-5 years", "6-10 years", "10+ years"])
+                        
                     with col_d:
-                        availability = st.selectbox("Availability",
-                                                    ["Full-time", "Part-time", "Contract", "Remote"])
+                        availability = st.selectbox("Availability", 
+                                                  ["Full-time", "Part-time", "Contract", "Remote"])
                         hourly_rate = st.number_input("Hourly Rate (AED)", min_value=0, value=150)
-
-                    skills = st.text_input("Skills",
-                                           placeholder="Python, Machine Learning, Data Analysis, etc.")
-                    certifications = st.text_input("Certifications",
-                                                   placeholder="AWS Certified, PMP, etc.")
+                    
+                    skills = st.text_input("Skills", 
+                                         placeholder="Python, Machine Learning, Data Analysis, etc.")
+                    certifications = st.text_input("Certifications", 
+                                                  placeholder="AWS Certified, PMP, etc.")
 
                 if st.form_submit_button("Save Profile Changes", use_container_width=True):
                     cursor = db.conn.cursor()
                     cursor.execute("""
-                                   UPDATE users
-                                   SET name         = ?,
-                                       organization = ?,
-                                       bio          = ?,
-                                       location     = ?
+                                   UPDATE users 
+                                   SET name = ?, organization = ?, bio = ?, location = ?
                                    WHERE id = ?
                                    """, (name, organization, bio, location, user['id']))
                     db.conn.commit()
-
+                    
                     st.success("✅ Profile updated successfully!")
                     st.session_state.user.update({
                         'name': name,
@@ -2869,21 +2449,19 @@ def show_enhanced_profile_page(db: Database):
 
     with tab2:
         st.markdown("### 🤝 Professional Network")
-
+        
         # Network statistics
         col1, col2, col3 = st.columns(3)
-
+        
         cursor = db.conn.cursor()
-
+        
         with col1:
             cursor.execute("""
-                           SELECT COUNT(*)
-                           FROM connections
-                           WHERE (requester_id = ? OR addressee_id = ?)
-                             AND status = 'accepted'
+                           SELECT COUNT(*) FROM connections 
+                           WHERE (requester_id = ? OR addressee_id = ?) AND status = 'accepted'
                            """, (user['id'], user['id']))
             connections_count = cursor.fetchone()[0]
-
+            
             st.markdown(f'''
             <div class="metric-card">
                 <div class="metric-value">{connections_count}</div>
@@ -2893,13 +2471,11 @@ def show_enhanced_profile_page(db: Database):
 
         with col2:
             cursor.execute("""
-                           SELECT COUNT(*)
-                           FROM connections
-                           WHERE addressee_id = ?
-                             AND status = 'pending'
+                           SELECT COUNT(*) FROM connections 
+                           WHERE addressee_id = ? AND status = 'pending'
                            """, (user['id'],))
             pending_requests = cursor.fetchone()[0]
-
+            
             st.markdown(f'''
             <div class="metric-card">
                 <div class="metric-value">{pending_requests}</div>
@@ -2910,7 +2486,7 @@ def show_enhanced_profile_page(db: Database):
         with col3:
             # Calculate network growth (mock data)
             network_growth = "+12%"
-
+            
             st.markdown(f'''
             <div class="metric-card">
                 <div class="metric-value">{network_growth}</div>
@@ -2922,19 +2498,18 @@ def show_enhanced_profile_page(db: Database):
         cursor.execute("""
                        SELECT u.id, u.name, u.user_type, u.organization, u.is_verified
                        FROM connections c
-                                JOIN users u ON (
+                       JOIN users u ON (
                            CASE WHEN c.requester_id = ? THEN c.addressee_id ELSE c.requester_id END = u.id
-                           )
-                       WHERE (c.requester_id = ? OR c.addressee_id = ?)
-                         AND c.status = 'accepted'
+                       )
+                       WHERE (c.requester_id = ? OR c.addressee_id = ?) AND c.status = 'accepted'
                        ORDER BY c.accepted_at DESC
                        """, (user['id'], user['id'], user['id']))
-
+        
         connections = cursor.fetchall()
-
+        
         if connections:
             st.markdown("#### Your Professional Network")
-
+            
             for connection in connections:
                 st.markdown(f'''
                 <div class="modern-card">
@@ -2959,17 +2534,16 @@ def show_enhanced_profile_page(db: Database):
         # Connection requests
         if pending_requests > 0:
             st.markdown("#### Pending Connection Requests")
-
+            
             cursor.execute("""
                            SELECT c.id, u.name, u.user_type, u.organization, c.message
                            FROM connections c
-                                    JOIN users u ON c.requester_id = u.id
-                           WHERE c.addressee_id = ?
-                             AND c.status = 'pending'
+                           JOIN users u ON c.requester_id = u.id
+                           WHERE c.addressee_id = ? AND c.status = 'pending'
                            """, (user['id'],))
-
+            
             requests = cursor.fetchall()
-
+            
             for request in requests:
                 st.markdown(f'''
                 <div class="modern-card">
@@ -2995,10 +2569,10 @@ def show_enhanced_profile_page(db: Database):
 
     with tab3:
         st.markdown("### 💼 Professional Activity")
-
+        
         # Activity metrics
         col1, col2, col3 = st.columns(3)
-
+        
         with col1:
             st.markdown('''
             <div class="metric-card">
@@ -3025,29 +2599,29 @@ def show_enhanced_profile_page(db: Database):
 
         # Recent activity
         cursor.execute("""
-                       SELECT *
-                       FROM activities
-                       WHERE user_id = ?
-                       ORDER BY created_at DESC LIMIT 10
+                       SELECT * FROM activities 
+                       WHERE user_id = ? 
+                       ORDER BY created_at DESC 
+                       LIMIT 10
                        """, (user['id'],))
-
+        
         activities = cursor.fetchall()
-
+        
         if activities:
             st.markdown("#### Recent Activity")
-
+            
             for activity in activities:
                 icon_map = {
                     "project_completed": "✅",
-                    "skill_certified": "🎓",
+                    "skill_certified": "🎓", 
                     "connection_made": "🤝",
                     "project_started": "🚀",
                     "lab_booked": "🔬",
                     "review_received": "⭐"
                 }
-
+                
                 icon = icon_map.get(activity['activity_type'], "📋")
-
+                
                 st.markdown(f'''
                 <div class="activity-item">
                     <div style="display: flex; align-items: center; gap: 1rem;">
@@ -3067,9 +2641,9 @@ def show_enhanced_profile_page(db: Database):
 
     with tab4:
         st.markdown("### 💰 KIC Wallet Management")
-
+        
         col1, col2 = st.columns([2, 1])
-
+        
         with col1:
             # KIC balance overview
             st.markdown(f'''
@@ -3081,18 +2655,18 @@ def show_enhanced_profile_page(db: Database):
                 <div style="opacity: 0.8;">Knowledge & Innovation Connected Currency</div>
             </div>
             ''', unsafe_allow_html=True)
-
+            
             # Recent transactions
             st.markdown("#### Recent KIC Transactions")
-
+            
             transactions = KICManager.get_kic_transactions(user['id'], db, 10)
-
+            
             if transactions:
                 for txn in transactions:
                     color = "#16a34a" if txn['amount'] > 0 else "#dc2626"
                     sign = "+" if txn['amount'] > 0 else ""
                     icon = "📈" if txn['amount'] > 0 else "📉"
-
+                    
                     st.markdown(f'''
                     <div class="modern-card">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -3116,19 +2690,19 @@ def show_enhanced_profile_page(db: Database):
         with col2:
             # Quick actions
             st.markdown("#### Quick Actions")
-
+            
             if st.button("💸 Send KIC", use_container_width=True):
                 st.session_state.show_send_kic = True
                 st.rerun()
-
+                
             if st.button("📊 View Analytics", use_container_width=True):
                 st.session_state.current_page = "KIC Hub"
                 st.rerun()
-
+                
             if st.button("🎁 Earn More KIC", use_container_width=True):
                 st.session_state.current_page = "KIC Hub"
                 st.rerun()
-
+            
             # KIC earning tips
             st.markdown('''
             <div class="modern-card">
@@ -3145,17 +2719,17 @@ def show_enhanced_profile_page(db: Database):
 
     with tab5:
         st.markdown("### ⚙️ Account Settings")
-
+        
         col1, col2 = st.columns(2)
-
+        
         with col1:
             st.markdown("#### Account Security")
-
+            
             with st.form("change_password"):
                 current_password = st.text_input("Current Password", type="password")
                 new_password = st.text_input("New Password", type="password")
                 confirm_password = st.text_input("Confirm New Password", type="password")
-
+                
                 if st.form_submit_button("Update Password"):
                     if new_password != confirm_password:
                         st.error("Passwords don't match")
@@ -3165,17 +2739,13 @@ def show_enhanced_profile_page(db: Database):
                         # Verify current password
                         cursor = db.conn.cursor()
                         cursor.execute("""
-                                       SELECT id
-                                       FROM users
-                                       WHERE id = ?
-                                         AND password_hash = ?
+                                       SELECT id FROM users 
+                                       WHERE id = ? AND password_hash = ?
                                        """, (user['id'], EnhancedAuthManager.hash_password(current_password)))
-
+                        
                         if cursor.fetchone():
                             cursor.execute("""
-                                           UPDATE users
-                                           SET password_hash = ?
-                                           WHERE id = ?
+                                           UPDATE users SET password_hash = ? WHERE id = ?
                                            """, (EnhancedAuthManager.hash_password(new_password), user['id']))
                             db.conn.commit()
                             st.success("✅ Password updated successfully!")
@@ -3184,7 +2754,7 @@ def show_enhanced_profile_page(db: Database):
 
         with col2:
             st.markdown("#### Notification Preferences")
-
+            
             notification_settings = {
                 "Email notifications for new projects": True,
                 "Email notifications for messages": True,
@@ -3193,28 +2763,28 @@ def show_enhanced_profile_page(db: Database):
                 "KIC transaction alerts": True,
                 "Connection requests": True
             }
-
+            
             for setting, default_value in notification_settings.items():
                 st.checkbox(setting, value=default_value)
-
+            
             if st.button("Save Notification Settings"):
                 st.success("✅ Notification preferences saved!")
 
         st.markdown("---")
-
+        
         # Account actions
         col1, col2, col3 = st.columns(3)
-
+        
         with col1:
             if st.button("📧 Export My Data", use_container_width=True):
                 st.info("Data export will be sent to your email within 24 hours.")
-
+                
         with col2:
             if st.button("🚪 Logout", use_container_width=True):
                 for key in list(st.session_state.keys()):
                     del st.session_state[key]
                 st.rerun()
-
+                
         with col3:
             if st.button("🗑️ Delete Account", type="secondary", use_container_width=True):
                 st.warning("⚠️ This action cannot be undone!")
