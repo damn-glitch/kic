@@ -2,4 +2,3 @@ pandas
 plotly
 streamlit-lottie
 requests
-imghdr
